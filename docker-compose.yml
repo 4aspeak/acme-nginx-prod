@@ -32,6 +32,8 @@ services:
       - nginx_html:/usr/share/nginx/html
       - nginx_vhost:/etc/nginx/vhost.d
       - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./vhost.d/default:/etc/nginx/vhost.d/default:ro
+      - ./custom.conf:/etc/nginx/conf.d/custom.conf:ro
     restart: unless-stopped
     networks:
       - general-network
