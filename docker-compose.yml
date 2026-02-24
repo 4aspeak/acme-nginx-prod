@@ -25,6 +25,8 @@ services:
       - "443:443"
       - "80:80"
     volumes:
+      - static-data:/www/app/staticfiles
+      - media-data:/www/app/mediafiles
       - certs:/etc/nginx/certs
       - nginx_conf:/etc/nginx/conf.d
       - nginx_html:/usr/share/nginx/html
@@ -41,8 +43,6 @@ services:
       - NGINX_PROXY_CONTAINER=nginx-proxy
       - DEFAULT_EMAIL=sungatullinbulat05@gmail.com
     volumes:
-      - static-data:/www/app/staticfiles
-      - media-data:/www/app/mediafiles
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - nginx_conf:/etc/nginx/conf.d
       - certs:/etc/nginx/certs
