@@ -1,0 +1,56 @@
+networks:
+  general-network:
+    external: true
+    name: general-network
+
+volumes:
+  certs:
+  nginx_conf:
+  nginx_html:
+  nginx_vhost:
+  acme:
+  static-data:
+    external: true
+  media-data:
+    external: true
+
+services:
+  nginx-proxy:
+    container_name: nginx-proxy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nginxproxy/nginx-proxy
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - certs:/etc/nginx/certs
+      - nginx_conf:/etc/nginx/conf.d
+      - nginx_html:/usr/share/nginx/html
+      - nginx_vhost:/etc/nginx/vhost.d
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    restart: unless-stopped
+    networks:
+      - general-network
+
+  acme-companion:
+    image: nginxproxy/acme-companion
+    container_name: acme-companion
+    environment:
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+      - DEFAULT_EMAIL=sungatullinbulat05@gmail.com
+    volumes:
+      - static-data:/home/app/staticfiles
+      - media-data:/home/app/mediafiles
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - nginx_conf:/etc/nginx/conf.d
+      - certs:/etc/nginx/certs
+      - nginx_html:/usr/share/nginx/html
+      - nginx_vhost:/etc/nginx/vhost.d
+      - acme:/etc/acme.sh
+    depends_on:
+      - nginx-proxy
+    restart: unless-stopped
+    networks:
+      - general-network
